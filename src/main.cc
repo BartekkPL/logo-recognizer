@@ -1,7 +1,10 @@
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <experimental/filesystem>
 #include <iostream>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
+#include "logo_recognizer.h"
 
 namespace fs = std::experimental::filesystem::v1;
 
@@ -21,6 +24,9 @@ int main(int argc, char** argv)
     std::cout << "Could not open or find the image!\n";
     return -1;
   }
+
+  LogoRecognizer lr;
+  lr.recognizeLogo(image);
 
   cv::namedWindow(fs::path(argv[1]).filename().string(), cv::WINDOW_AUTOSIZE);
   cv::imshow(fs::path(argv[1]).filename().string(), image);
