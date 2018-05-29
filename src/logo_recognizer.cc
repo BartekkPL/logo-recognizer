@@ -115,8 +115,8 @@ cv::Vec3b LogoRecognizer::randomColor(cv::RNG& rng) {
   return cv::Vec3b(icolor&255, (icolor>>8)&255, (icolor>>16)&255);
 }
 
-void LogoRecognizer::fillShape(cv::Mat& image, int x, int y, cv::Vec3b color
-    Shape& shape) {
+void LogoRecognizer::fillShape(cv::Mat& image, int x, int y, cv::Vec3b color,
+                               Shape& shape) {
   std::list<cv::Point2i> point_to_check;
   cv::Point2i actual, left, right, up, down;
 
