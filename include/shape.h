@@ -6,10 +6,11 @@
 class Shape {
  public:
   Shape(cv::Scalar color) : color(color) {};
-  Shape(cv::Mat image, int x, int y, cv::Scalar color) : color(color),
-      x_geom(x), y_geom(y), image(image) {};
+  Shape(cv::Mat& image, int x, int y, cv::Scalar color) : image(image), color(color),
+      x_geom(x), y_geom(y) {};
   void calcAll();
 
+  cv::Mat image;
   cv::Scalar color;
   std::vector<cv::Point2i> points;
   int perimeter;
@@ -28,7 +29,6 @@ class Shape {
   void calcCentralMoments();
   void calcParameters();
 
-  cv::Mat image;
 
   // raw moments
   double m00;

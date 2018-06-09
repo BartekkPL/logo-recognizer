@@ -3,6 +3,7 @@
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include "logo_recognizer.h"
 
@@ -15,8 +16,7 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  std::cout << fs::path(argv[1]).filename().string() << "\n";
-
+  // Load an image
   cv::Mat image;
   image = cv::imread(argv[1]);
 
@@ -25,10 +25,15 @@ int main(int argc, char** argv)
     return -1;
   }
 
+  // Resize the image to 600 rows
+  double factor = 600.0 / (double)image.cols;
+  cv::resize(image, image, cv::Size(), factor, factor, cv::INTER_LANCZOS4);
+
   LogoRecognizer lr;
   lr.recognizeLogo(image);
 
-  cv::namedWindow(fs::path(argv[1]).filename().string(), cv::WINDOW_AUTOSIZE);
+  // Display the result
+  cv::namedWindow(fs::path(argv[1]).filename().string(), cv::WINDOW_NORMAL);
   cv::imshow(fs::path(argv[1]).filename().string(), image);
 
   std::cout << "To end the program press 'q' in image window.\n";

@@ -1,6 +1,8 @@
 #ifndef LOGO_RECOGNIZER_H
 #define LOGO_RECOGNIZER_H
 
+#include <vector>
+
 #include <opencv2/core/core.hpp>
 
 #include "shape.h"
@@ -22,7 +24,8 @@ class LogoRecognizer {
   void segmentation(cv::Mat& image, std::vector<Shape>& shapes);
   cv::Vec3b randomColor(cv::RNG& rng);
   void fillShape(cv::Mat& image, int x, int y, cv::Vec3b color, Shape& shape);
-  void filterLittleShapes();
+  void filterShapes(cv::Mat& image, std::vector<Shape>& shapes);
+
 };
 
 #endif  // LOGO_RECOGNIZER_H

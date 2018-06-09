@@ -14,15 +14,13 @@ bool LogoRecognizer::recognizeLogo(cv::Mat& image) {
   cv::Mat hls_image;
   cv::cvtColor(image, hls_image, CV_BGR2HLS);
 
-  // changeContrastBGR(image, 150);
   cv::Mat red_image = image.clone();
   cv::Mat white_image = image.clone();
-  // tresholdingBGR(red_image, cv::Scalar(0, 0, 128), cv::Scalar(128, 128, 255));
-  // tresholdingBGR(white_image, cv::Scalar(200, 200, 200), cv::Scalar(255, 255, 255));
   tresholdingHLS(hls_image, cv::Scalar(170, 77, 77), cv::Scalar(179, 204, 255));
-  //tresholdingHLS(white_image, cv::Scalar(200, 200, 200), cv::Scalar(255, 255, 255));
+
   cv::cvtColor(hls_image, image, CV_HLS2BGR);
   segmentation(image, shapes);
+
   return true;
 }
 
@@ -97,7 +95,6 @@ void LogoRecognizer::segmentation(cv::Mat& image, std::vector<Shape>& shapes) {
   cv::Mat_<cv::Vec3b> x = image;
   for (int i = 0; i < image.rows; ++i) {
     for (int j = 0; j < image.cols; ++j) {
-      std::cout << x(i, j) << "\n";
       if (x(i, j)[0] == 255 && x(i, j)[1] == 255 && x(i, j)[2] == 255 ) {
         cv::RNG rng(n);
         color = randomColor(rng);
@@ -107,7 +104,7 @@ void LogoRecognizer::segmentation(cv::Mat& image, std::vector<Shape>& shapes) {
       }
     }
   }
-  filterLittleShapes();
+  filterShapes(image, shapes);
 }
 
 cv::Vec3b LogoRecognizer::randomColor(cv::RNG& rng) {
@@ -130,17 +127,10 @@ void LogoRecognizer::fillShape(cv::Mat& image, int x, int y, cv::Vec3b color,
     _image(actual) = color;
     shape.points.push_back(actual);
 
-    std::cout << "Changed: " << _image(actual) << "\n";
     left = cv::Point2i(actual.x-1, actual.y);
     right = cv::Point2i(actual.x+1, actual.y);
     up = cv::Point2i(actual.x, actual.y-1);
     down = cv::Point2i(actual.x, actual.y+1);
-
-    std::cout << "Point: " << actual << "\n";
-    std::cout << "Left: " << _image(left) << "\n";
-    std::cout << "Right: " << _image(right) << "\n";
-    std::cout << "Up: " << _image(up) << "\n";
-    std::cout << "Down: " << _image(down) << "\n";
 
     if (left.x >= 0 && _image(left)[0] == 255 &&
         _image(left)[1] == 255 &&
@@ -175,6 +165,21 @@ void LogoRecognizer::fillShape(cv::Mat& image, int x, int y, cv::Vec3b color,
   image = _image;
 }
 
-void LogoRecognizer::filterLittleShapes() {
-
+void LogoRecognizer::filterShapes(cv::Mat& image, std::vector<Shape>& shapes) {
+  cv::Scalar black = cv::Scalar(0, 0, 0);
+  cv::Mat_<cv::Vec3b> x = image;
+  for (auto shape = shapes.begin(); shape != shapes.end(); shape++) {
+    shape->area = shape->points.size();
+    if (shape->area < 300 || shape->area > 2000) {
+      shape->color = black;
+      for (auto point : shape->points) {
+        x(point.y, point.x)[0] = 0;
+        x(point.y, point.x)[1] = 0;
+        x(point.y, point.x)[2] = 0;
+      }
+      shapes.erase(shape);
+      shape--;
+    }
+  }
+  image = x;
 }
