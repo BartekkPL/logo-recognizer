@@ -6,42 +6,44 @@
 class Shape {
  public:
   Shape(cv::Scalar color) : color(color) {};
-  Shape(cv::Mat& image, int x, int y, cv::Scalar color) : image(image), color(color),
-      x_geom(x), y_geom(y) {};
-  void calcAll();
+  void calcParameters();
+  bool isSquare();
 
-  cv::Mat image;
   cv::Scalar color;
   std::vector<cv::Point2i> points;
-  int perimeter;
   int area;
-  double W3;
-  double M1;
-  double M7;
-  int x_geom;
-  int y_geom;
+
+ private:
+  double calcRawMoment(int p, int q);
+
   double x_centr;
   double y_centr;
 
- private:
-  void calcPerimeterAndArea();
-  void calcRawMoments();
-  void calcCentralMoments();
-  void calcParameters();
-
-
   // raw moments
-  double m00;
   double m01;
   double m10;
-  double m11;
   double m02;
   double m20;
+  double m03;
+  double m30;
+  double m11;
+  double m21;
+  double m12;
 
   // central moments
+  double M01;
+  double M10;
+  double M11;
   double M20;
   double M02;
-  double M11;
+  double M21;
+  double M12;
+  double M30;
+  double M03;
+  double NM1;
+  double NM2;
+  double NM3;
+  double NM7;
 };
 
 #endif  // SHAPE_H

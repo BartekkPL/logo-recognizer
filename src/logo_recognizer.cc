@@ -20,6 +20,8 @@ bool LogoRecognizer::recognizeLogo(cv::Mat& image) {
 
   cv::cvtColor(hls_image, image, CV_HLS2BGR);
   segmentation(image, shapes);
+  analysis(shapes);
+  recognition(image, shapes);
 
   return true;
 }
@@ -182,4 +184,29 @@ void LogoRecognizer::filterShapes(cv::Mat& image, std::vector<Shape>& shapes) {
     }
   }
   image = x;
+}
+
+void LogoRecognizer::analysis(std::vector<Shape>& shapes) {
+  for (auto& shape : shapes)
+    shape.calcParameters();
+}
+
+void LogoRecognizer::recognition(cv::Mat& image, std::vector<Shape>& shapes) {
+  std::vector<Shape> square, triangle;
+  std::vector<Shape> logo;
+
+  for (auto& shape : shapes) {
+    if (shape.isSquare()) {
+      square.push_back(shape);
+    } else if (isTriangle(shape)) {
+      triangle.push_back(shape);
+    } else {
+      for (auto& point : shape.points) {
+        image.at<cv::Vec3b>(point.y, point.x) = cv::Vec3b(0, 0, 0);
+      }
+    }
+  }
+
+bool LogoRecognizer::isTriangle(Shape& s) {
+  return false;
 }

@@ -25,7 +25,9 @@ class LogoRecognizer {
   cv::Vec3b randomColor(cv::RNG& rng);
   void fillShape(cv::Mat& image, int x, int y, cv::Vec3b color, Shape& shape);
   void filterShapes(cv::Mat& image, std::vector<Shape>& shapes);
-
+  void analysis(std::vector<Shape>& shapes);
+  void recognition(cv::Mat& image, std::vector<Shape>& shapes);
+  bool isTriangle(Shape& s);
 };
 
 #endif  // LOGO_RECOGNIZER_H
