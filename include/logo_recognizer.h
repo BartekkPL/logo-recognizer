@@ -27,7 +27,6 @@ class LogoRecognizer {
   void filterShapes(cv::Mat& image, std::vector<Shape>& shapes);
   void analysis(std::vector<Shape>& shapes);
   void recognition(cv::Mat& image, std::vector<Shape>& shapes);
-  bool isTriangle(Shape& s);
 };
 
 #endif  // LOGO_RECOGNIZER_H

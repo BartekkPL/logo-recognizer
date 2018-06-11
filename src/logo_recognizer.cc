@@ -6,18 +6,17 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/imgproc/types_c.h>
 
+// Main function that agregate functions to detect logo
 bool LogoRecognizer::recognizeLogo(cv::Mat& image) {
   std::vector<Shape> shapes;
   if (image.empty())
     return false;
 
+  // Convert to HLS colors
   cv::Mat hls_image;
   cv::cvtColor(image, hls_image, CV_BGR2HLS);
-
-  cv::Mat red_image = image.clone();
-  cv::Mat white_image = image.clone();
-  tresholdingHLS(hls_image, cv::Scalar(170, 77, 77), cv::Scalar(179, 204, 255));
-
+  tresholdingHLS(hls_image, cv::Scalar(160, 60, 60), cv::Scalar(199, 204, 255));
+  // Convert back to BGR colors
   cv::cvtColor(hls_image, image, CV_HLS2BGR);
   segmentation(image, shapes);
   analysis(shapes);
@@ -26,12 +25,17 @@ bool LogoRecognizer::recognizeLogo(cv::Mat& image) {
   return true;
 }
 
+// If pixel color is in expected range than we change it to white, in other case
+// it is changed to black
 void LogoRecognizer::tresholdingHLS(cv::Mat& image, cv::Scalar low_hls,
                                     cv::Scalar high_hls) {
   cv::Mat_<cv::Vec3b> x = image;
   for (int i = 0; i < x.rows; i++) {
     for (int j = 0; j < x.cols; j++) {
-      if (x(i, j)[0] >= low_hls[0] && x(i, j)[0] <= high_hls[0] &&
+      // We check two times H value, because red color is at the begining of
+      // its range and at the end of it
+      if (((x(i, j)[0] >= low_hls[0] && x(i, j)[0] <= high_hls[0]) ||
+          (x(i, j)[0] >= 0 && x(i, j)[0] <= (int)high_hls[0] % 180)) &&
           x(i, j)[1] >= low_hls[1] && x(i, j)[1] <= high_hls[1] &&
           x(i, j)[2] >= low_hls[2] && x(i, j)[2] <= high_hls[2]) {
         x(i, j) = cv::Vec3i(0, 255, 0);
@@ -91,6 +95,8 @@ void LogoRecognizer::tresholdingBGR(cv::Mat& image, cv::Scalar low_bgr,
   image = x;
 }
 
+// Divide image into vector of shapes that is coloured to random color
+// Small shapes all removed from image (coloured to black)
 void LogoRecognizer::segmentation(cv::Mat& image, std::vector<Shape>& shapes) {
   int n = 1;
   cv::Vec3b color;
@@ -114,6 +120,7 @@ cv::Vec3b LogoRecognizer::randomColor(cv::RNG& rng) {
   return cv::Vec3b(icolor&255, (icolor>>8)&255, (icolor>>16)&255);
 }
 
+// Fills shape with color and create vector of its points using flood fill method
 void LogoRecognizer::fillShape(cv::Mat& image, int x, int y, cv::Vec3b color,
                                Shape& shape) {
   std::list<cv::Point2i> point_to_check;
@@ -167,12 +174,13 @@ void LogoRecognizer::fillShape(cv::Mat& image, int x, int y, cv::Vec3b color,
   image = _image;
 }
 
+// Filters too small shapes
 void LogoRecognizer::filterShapes(cv::Mat& image, std::vector<Shape>& shapes) {
-  cv::Scalar black = cv::Scalar(0, 0, 0);
+  cv::Vec3b black(0, 0, 0);
   cv::Mat_<cv::Vec3b> x = image;
   for (auto shape = shapes.begin(); shape != shapes.end(); shape++) {
     shape->area = shape->points.size();
-    if (shape->area < 300 || shape->area > 2000) {
+    if (image.cols > 550 && shape->area < 250/* || shape->area > 2000*/) {
       shape->color = black;
       for (auto point : shape->points) {
         x(point.y, point.x)[0] = 0;
@@ -186,11 +194,13 @@ void LogoRecognizer::filterShapes(cv::Mat& image, std::vector<Shape>& shapes) {
   image = x;
 }
 
+// Calculates needed parameters that will be used to comparision
 void LogoRecognizer::analysis(std::vector<Shape>& shapes) {
   for (auto& shape : shapes)
     shape.calcParameters();
 }
 
+// Checks if some of shapes belongs to logo
 void LogoRecognizer::recognition(cv::Mat& image, std::vector<Shape>& shapes) {
   std::vector<Shape> square, triangle;
   std::vector<Shape> logo;
@@ -198,7 +208,7 @@ void LogoRecognizer::recognition(cv::Mat& image, std::vector<Shape>& shapes) {
   for (auto& shape : shapes) {
     if (shape.isSquare()) {
       square.push_back(shape);
-    } else if (isTriangle(shape)) {
+    } else if (shape.isTriangle()) {
       triangle.push_back(shape);
     } else {
       for (auto& point : shape.points) {
@@ -206,7 +216,4 @@ void LogoRecognizer::recognition(cv::Mat& image, std::vector<Shape>& shapes) {
       }
     }
   }
-
-bool LogoRecognizer::isTriangle(Shape& s) {
-  return false;
 }

@@ -5,11 +5,12 @@
 
 class Shape {
  public:
-  Shape(cv::Scalar color) : color(color) {};
+  Shape(cv::Vec3b color) : color(color) {};
   void calcParameters();
   bool isSquare();
+  bool isTriangle();
 
-  cv::Scalar color;
+  cv::Vec3b color;
   std::vector<cv::Point2i> points;
   int area;
 

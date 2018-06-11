@@ -24,8 +24,6 @@ void Shape::calcParameters() {
   x_centr = m10 / area;
   y_centr = m01 / area;
 
-  M01 = m01 - (m01 / area) * area;
-  M10 = m10 - (m10 / area) * area;
   M11 = m11 - m10 * m01 / area;
   M20 = m20 - m10 * m10 / area;
   M02 = m02 - m01 * m01 / area;
@@ -42,9 +40,15 @@ void Shape::calcParameters() {
 }
 
 bool Shape::isSquare() {
-  // if (NM1 >= 0.12 && NM1 < 0.21 && NM2 >= 0.0006 && NM2 < 0.0016 && NM3 >= 0.0 &&
-  //     NM3 < 0.002 && NM7 >= 0.003 && NM7 < 0.009)
-  //   return true;
-  // return false;
-  return true;
+  if (NM1 >= 0.16 && NM1 < 0.195 && NM2 >= 0.0008 && NM2 < 0.01 && NM3 >= 0.0 &&
+      NM3 < 0.0001 && NM7 >= 0.0065 && NM7 < 0.0072)
+    return true;
+  return false;
+}
+
+bool Shape::isTriangle() {
+  if (NM1 >= 0.19 && NM1 < 0.3 && NM2 >= 0.003 && NM2 < 0.05 && NM3 >= 0.002 &&
+      NM3 < 0.01 && NM7 >= 0.0075 && NM7 < 0.01)
+    return true;
+  return false;
 }
