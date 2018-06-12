@@ -7,10 +7,10 @@
 
 #include "logo_recognizer.h"
 
+// Filesystem is still experimental feature in C++17
 namespace fs = std::experimental::filesystem::v1;
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv) {
   if (argc != 2) {
     std::cout << " Usage: logo-recognizer <path-to-an-image>\n";
     return -1;
@@ -25,9 +25,11 @@ int main(int argc, char** argv)
     return -1;
   }
 
-  // Resize the image to 600 rows
-  double factor = 600.0 / (double)image.cols;
-  cv::resize(image, image, cv::Size(), factor, factor, cv::INTER_LANCZOS4);
+  // Resize the image to 600 cols if it is bigger
+  if (image.cols > 600) {
+    double factor = 600.0 / (double)image.cols;
+    cv::resize(image, image, cv::Size(), factor, factor, cv::INTER_LANCZOS4);
+  }
 
   LogoRecognizer lr;
   lr.recognizeLogo(image);

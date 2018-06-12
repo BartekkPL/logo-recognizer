@@ -8,6 +8,21 @@ In this project I use logo of some big supermarket chain that has its shops in m
 
 This implementation is project for my Digital Image Processing class and it is for better understanding image procesing and recognition.
 
+## Adaptation to other logos
+
+To use this program to recognize other logos you should change two things:
+
+1. Change colors range in tresholding function
+2. Change recognition function (all parameters NM1, NM2, etc.) to regonize shapes
+   from your logo
+
+## Possibility of improvement
+
+1. You should add operation of morphological closing after tresholding to
+   fill small holes in shapes that are some artifacts.
+2. Add a checking the position of shapes relative to each other to better logo
+   regognition.
+
 ## Platforms
 
 This parser has been used only on Linux, but
