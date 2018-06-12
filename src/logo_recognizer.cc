@@ -15,7 +15,7 @@ bool LogoRecognizer::recognizeLogo(cv::Mat& image) {
   // Convert to HLS colors
   cv::Mat hls_image;
   cv::cvtColor(image, hls_image, CV_BGR2HLS);
-  tresholdingHLS(hls_image, cv::Scalar(160, 60, 60), cv::Scalar(199, 204, 255));
+  tresholdingHLS(hls_image, cv::Scalar(170, 77, 77), cv::Scalar(199, 204, 255));
   // Convert back to BGR colors
   cv::cvtColor(hls_image, image, CV_HLS2BGR);
   segmentation(image, shapes);
@@ -35,7 +35,8 @@ void LogoRecognizer::tresholdingHLS(cv::Mat& image, cv::Scalar low_hls,
       // We check two times H value, because red color is at the begining of
       // its range and at the end of it
       if (((x(i, j)[0] >= low_hls[0] && x(i, j)[0] <= high_hls[0]) ||
-          (x(i, j)[0] >= 0 && x(i, j)[0] <= (int)high_hls[0] % 180)) &&
+          (high_hls[0] >= 180 && x(i, j)[0] >= 0 &&
+          x(i, j)[0] <= (int)high_hls[0] % 180)) &&
           x(i, j)[1] >= low_hls[1] && x(i, j)[1] <= high_hls[1] &&
           x(i, j)[2] >= low_hls[2] && x(i, j)[2] <= high_hls[2]) {
         x(i, j) = cv::Vec3i(0, 255, 0);
