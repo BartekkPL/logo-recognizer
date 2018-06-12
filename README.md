@@ -15,6 +15,8 @@ To use this program to recognize other logos you should change two things:
 1. Change colors range in tresholding function
 2. Change recognition function (all parameters NM1, NM2, etc.) to regonize shapes
    from your logo
+   
+You can check sample of parameters in [Kaufland logo parameters file](https://github.com/BartekkPL/logo-recognizer/blob/master/kaufland_logo_parameters.txt).
 
 ## Possibility of improvement
 
